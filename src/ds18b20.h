@@ -13,7 +13,8 @@ typedef enum {
 } RESOLUTION;
 
 #define TEMP(x)   ((temp_t)(x * 256.0))
-#define TEMP_ERR  INT16_MAX
+#define TEMP_ERR  (INT16_MAX)
+#define TEMP_MAX  (INT16_MAX-1)
 #define TEMP2I(x) ((int8_t)(x >> 8))
 
 typedef int16_t temp_t;

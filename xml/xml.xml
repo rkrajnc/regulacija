@@ -9,6 +9,9 @@
   <ds18b20 rom="28eacece010000ff" cname="HOUSE_S_B" >
     Zalogovnik hisa, spodaj
   </ds18b20>
+  <ds18b20 rom="288462dd02000069" cname="STABLE_0"  >
+    Zalogovnik hlev, bojler
+  </ds18b20>
   <ds18b20 rom="2871ebef01000063" cname="STABLE_S_T">
     Zalogovnik hlev, pod bojlerjem
   </ds18b20>
@@ -17,6 +20,9 @@
   </ds18b20>
   <ds18b20 rom="2886ceef010000be" cname="COLLECTOR" >
     Kolektorji
+  </ds18b20>
+  <ds18b20 rom="287383dd02000089" cname="OUTSIDE"   >
+    Zunaj
   </ds18b20>
   <ds18b20 rom="288abece01000051" cname="FURNACE_T" >
     Pec izhod
@@ -76,8 +82,8 @@
 </valve_list>
 
 <config_list>
-  <radiator_goal format="s7.8" reset="-1.0">
-    Zeljena temperatura dviznega voda. Vrednost manjsa od 0 pomeni avtomatsko regulacijo.
+  <radiator_goal format="s7.8" reset="23.0">
+    Zeljena temperatura ogrevanja.
   </radiator_goal>
   <collector_diff_on format="s7.8" reset="10.0">
     Razlika temperatur pri kateri naj se crpalka prizge.

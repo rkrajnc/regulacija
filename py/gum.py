@@ -29,18 +29,24 @@ class Gum():
     except EOFError:
       pass
     else:
-      if not port: port = unpickled['port']
+      #if not port: port = unpickled['port']
       if not rate: rate = unpickled['rate']
       if not meta: meta = unpickled['meta']
 
-    ports = tuple(map(lambda x: '/dev/ttyUSB' + str(x), range(16)))
-    if port:
-      ports = filter(lambda x: x != port, ports)
-      ports = tuple([port]) + tuple(ports)
-    ports = tuple(filter(os.path.exists, ports))
+    if port == None:
+      ports = ( '/dev/' + p for p in os.listdir('/dev/') if p.startswith('ttyUSB') or p.startswith('ttyS'))
+    else:
+      if type(port) == str:
+        ports = ( port, )
+      else:
+        try:
+          ports = iter(port)
+        except TypeError:
+          ports = ( port, )
     if not ports: raise Exception("No port found!")
+    ports = tuple(ports)
     
-    rates = ( 230400, 1000000, 115200, 9600 )
+    rates = ( 38400, 230400, 1000000, 115200, 9600 )
     #rates = rates + tuple(reversed(sorted(tuple(set(uart.uart.BAUDRATES) - set(rates)))))
     if rate:
       rates = filter(lambda x: x != rate, rates)
@@ -57,6 +63,7 @@ class Gum():
               break;
             except uart.ProtocolErr as inst:
               print("Failed:", uart.uart.port, uart.uart.baudrate, "reason:", inst)
+              uart.uart.close()
               if uart.uart.baudrate == rates[-1]: raise
               else:                               continue
         except uart.ProtocolErr:

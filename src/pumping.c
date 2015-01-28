@@ -1,4 +1,3 @@
-
 pumping_state_t pumping_state __attribute__ ((section (".noinit")));
 
 void pumping_loop()
@@ -6,6 +5,7 @@ void pumping_loop()
   temp_t tab [] = {
     DS18B20_HOUSE_S_B,
     DS18B20_HOUSE_S_T,
+    DS18B20_FURNACE_T,
     DS18B20_STABLE_S_B,
     DS18B20_STABLE_S_T,
     DS18B20_COLLECTOR,
@@ -15,17 +15,22 @@ void pumping_loop()
   
   temp_t t_house_s_b  = tab[0];
   temp_t t_house_s_t  = tab[1];
-  temp_t t_stable_s_b = tab[2];
-  temp_t t_stable_s_t = tab[3];
-  temp_t t_collector  = tab[4];
+  temp_t t_furnace_t  = tab[2];
+  temp_t t_stable_s_b = tab[3];
+  temp_t t_stable_s_t = tab[4];
+  temp_t t_collector  = tab[5];
 
-  temp_t diff_on       () { return TEMP(5); }
-  temp_t diff_off      () { return TEMP(2); }
+  CONFIG static temp_t pumping_diff_on  = TEMP(5);
+  CONFIG static temp_t pumping_diff_off = TEMP(2);
+
+  temp_t diff_on       () { return CONFIG_GET(pumping_diff_on ); }
+  temp_t diff_off      () { return CONFIG_GET(pumping_diff_off); }
   temp_t diff          () { return t_house_s_t - t_stable_s_t; }
   bool diff_h2s        () { return  diff() >= diff_on() || (pumping_state == PUMPING_H2S &&  diff() >= diff_off()); }
   bool diff_s2h        () { return -diff() >= diff_on() || (pumping_state == PUMPING_S2H && -diff() >= diff_off()); }
-  temp_t min_house_s_b () { return TEMP(55); }
-  bool furnace         () { return relay_get(RELAY_PUMP_FURNACE) && t_house_s_b >= min_house_s_b(); }
+  CONFIG static temp_t pumping_furnace_t_th = TEMP(75);
+  CONFIG static temp_t pumping_house_s_b_th = TEMP(55);
+  bool furnace         () { return t_furnace_t >= CONFIG_GET(pumping_furnace_t_th) && t_house_s_b >= CONFIG_GET(pumping_house_s_b_th); }
   bool collector       () { return t_collector > MIN(t_house_s_b, t_stable_s_b) && t_house_s_b < t_stable_s_b; }
   date_t mms = (date_t){ 0, 0,  4, -1, -1, -1, -1 };
   date_t mme = (date_t){ 0, 0,  8, -1, -1, -1, -1 };

@@ -179,22 +179,24 @@ void lcd_loop()
   lprintf(0, 0,
     "His%cHle|Pec|Kol|Rad "
     "%3d|%3d|%3d|%3d|%3d "
-    "%3d|%3d|%3d|   |%3d "
-    "%3d|   |%c%03s%c  |%c%03s",
+    "%3d|%3d|%3d|%3d|%3d "
+    "%3d|%3d|%c%03s%c  |%c%03s",
       pumping_state == PUMPING_S2H ? '<' : (pumping_state == PUMPING_H2S ? '>' : '|'),
       
       temp_tab_int[DS18B20_HOUSE_0   ],
-      temp_tab_int[DS18B20_STABLE_S_T],
+      temp_tab_int[DS18B20_STABLE_0  ],
       temp_tab_int[DS18B20_FURNACE_T ],
       temp_tab_int[DS18B20_COLLECTOR ],
       temp_tab_int[DS18B20_RADIATOR_U],
   
       temp_tab_int[DS18B20_HOUSE_S_T ],
-      temp_tab_int[DS18B20_STABLE_S_B],
+      temp_tab_int[DS18B20_STABLE_S_T],
       temp_tab_int[DS18B20_FURNACE_B ],
+      temp_tab_int[DS18B20_OUTSIDE   ],
       temp_tab_int[DS18B20_RADIATOR_D],
 
       temp_tab_int[DS18B20_HOUSE_S_B ],
+      temp_tab_int[DS18B20_STABLE_S_B],
       relay_get(RELAY_PUMP_FURNACE)   ? '*' : ' ',
       sf,
       relay_get(RELAY_PUMP_COLLECTOR) ? '*' : ' ',

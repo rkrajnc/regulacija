@@ -19,7 +19,7 @@ defines = {
 #  "F_CPU"   : 9216000,
 #  "BAUD"    : 230400,
   "F_CPU"   : 16000000,
-  "BAUD"    : 1000000,
+  "BAUD"    : 38400,
 #  "NDEBUG" : "",
   "__ASSERT_USE_STDERR" : "", # I have my own assert right now anyway
   "__DELAY_BACKWARD_COMPATIBLE__" : "", # compile error with 4.7.2

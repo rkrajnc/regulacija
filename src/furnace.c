@@ -21,38 +21,35 @@ void furnace_loop()
 
   ds18b20_get_temp_tab(NR, RESOLUTION_9, 7, tab);
 
-  if (tab[OUT] > TEMP(85)) { // soft failback
+  if (tab[OUT] > TEMP(90)) { // soft failback
     relay_on(RELAY_PUMP_FURNACE);
     valve_open(VALVE_FURNACE);
     DBG_CNT(furnace_failback);
   } else {
-    if ((tab[OUT] - tab[IN]) > TEMP(5)) relay_on (RELAY_PUMP_FURNACE);
-    else                                relay_off(RELAY_PUMP_FURNACE);
+    CONFIG static temp_t furnace_goal_in  = TEMP(60);
+    CONFIG static temp_t furnace_goal_out = TEMP(80);
+    temp_t goal_in  = CONFIG_GET(furnace_goal_in );
+    temp_t goal_out = CONFIG_GET(furnace_goal_out);
     
-    temp_t out_err = tab[OUT] - TEMP(75);
-    DBG_VAR(f_out_err, out_err);
-    temp_t goal = MAX(TEMP(50), tab[OUT] - TEMP(15));
-    DBG_VAR(f_goal0, goal);
-    if (out_err > TEMP(0)) goal = MIN(goal, tab[IN] - out_err);
-    DBG_VAR(f_goal1, goal);
+    if ((tab[OUT] - tab[IN]) > TEMP(5) || tab[IN] > goal_in)
+        relay_on (RELAY_PUMP_FURNACE);
+    else
+        relay_off(RELAY_PUMP_FURNACE);
+  
+    temp_t out_err = tab[OUT] - goal_out;
+    temp_t goal = goal_in - MAX(out_err, goal_in - TEMP_MAX);
     
     /* apply goal ... */
     temp_t curr  = ds18b20_get_temp(DS18B20_FURNACE_B, RESOLUTION_12, 7);
-    DBG_VAR(f_curr1, curr);
     _delay_ms(1000);
     temp_t curr2 = ds18b20_get_temp(DS18B20_FURNACE_B, RESOLUTION_12, 7);
-    DBG_VAR(f_curr2, curr2);
     
     curr = curr2 + (curr2 - curr) * 16;
-    DBG_VAR(f_curr3, curr);
   
     bool dir = curr < goal;
     temp_t diff = dir ? goal - curr : curr - goal;
   
     valve_state_t amount = (VALVE_STATE_MAX * (uint32_t)diff) >> (8 + 6);
-    DBG_VAR(f_dir,    dir);
-    DBG_VAR(f_diff,   diff);
-    DBG_VAR(f_amount, amount);
   
     if (dir) valve_close_for(VALVE_FURNACE, amount);
     else     valve_open_for (VALVE_FURNACE, amount);
